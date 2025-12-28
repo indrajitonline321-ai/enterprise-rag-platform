@@ -5,9 +5,11 @@ import com.azure.storage.blob.models.BlobItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/files")
@@ -33,5 +35,30 @@ public class FileController {
         }
         return ResponseEntity.ok(names);
     }
+    @PostMapping("/upload")  
+    public ResponseEntity<Map<String, String>> upload(@RequestParam("file") MultipartFile file) {
+        try {
+            BlobServiceClient service = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+                
+            BlobContainerClient container = service.getBlobContainerClient("documents");
+            container.createIfNotExists();
+            
+            BlobClient blob = container.getBlobClient(file.getOriginalFilename());
+            blob.upload(file.getInputStream(), file.getSize(), true);
+            
+            Map<String, String> response = Map.of(
+                "message", "✅ File uploaded successfully!",
+                "name", file.getOriginalFilename(),
+                "url", blob.getBlobUrl()
+            );
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body(Map.of("error", e.getMessage()));
+        }
+}
 }
 
