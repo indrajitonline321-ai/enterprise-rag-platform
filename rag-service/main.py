@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from azure.storage.blob import BlobServiceClient
 import pypdf
 import os
-from typing import List
+from typing import List, Dict, Any
 import io
 import requests
 import pdfplumber
@@ -15,8 +15,20 @@ from PIL import Image
 import pandas as pd
 import os
 import re
+import requests
+import ollama
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue
+from datetime import datetime, timezone
+import uuid
+from qdrant_client.models import PointStruct
+import hashlib
 
 app = FastAPI(title="RAG Service", version="0.1.0")
+QDRANT_URL = "http://localhost:6333"
+COLLECTION_NAME = "rag_chunks"
+client = QdrantClient(QDRANT_URL)
+
 
 
 class IngestRequest(BaseModel):
@@ -49,6 +61,24 @@ def chunk_text(text: str, max_memory_mb: int = 50) -> list:
             chunks.append(chunk)
     return chunks
 
+def get_embedding(text: str) -> List[float]:
+    """Ollama local embeddings (free, offline)"""
+    response = ollama.embeddings(
+        model="nomic-embed-text",  # 137-dim, fast
+        prompt=text[:2048]  # Ollama limit
+    )
+    return response['embedding']
+
+def init_collection():    
+    if client.collection_exists(COLLECTION_NAME):
+        print("✅ Collection exists - appending mode")
+        return
+    client.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+    )
+    print("✅ Collection created (first time)")
+
 def detect_file_type(url: str) -> str:
     ext = url.lower().split('.')[-1]
     return {
@@ -70,6 +100,53 @@ def normalize_text(t: str) -> List[str]:
     t = t.lower()
     t = re.sub(r"[^\w\s]", " ", t)  # keep word chars + spaces
     return [w for w in t.split() if w]
+
+def search_logic(query: str, limit: int = 5) -> List[Dict]:
+    query_embedding = get_embedding(query)
+    
+    results = client.query_points(
+        collection_name=COLLECTION_NAME,
+        query=query_embedding,
+        limit=limit * 3,
+        with_payload=True,
+    )
+    
+    def rerank_score(item):
+        content = item["content"].lower()
+        query_words = query.lower().split()
+        matches = sum(1 for word in query_words if word in content)
+        return item["score"] * (1 + matches * 0.3)
+    
+    raw_results = []
+
+    
+    # ✅ SAFE: Iterate without unpacking
+    for point_item in results.points:
+        # Handle different formats
+        if isinstance(point_item, tuple):
+            if len(point_item) == 2:
+                point_tuple, score = point_item
+            else:
+                point_tuple = point_item[0]
+                score = point_item.score if hasattr(point_item[1], 'score') else 0.0
+        else:
+            # Single ScoredPoint object
+            point_tuple = point_item
+            score = getattr(point_item, 'score', 0.0)
+        
+        raw_results.append({
+            "id": point_tuple.id,
+            "score": float(score),
+            "content": point_tuple.payload.get("content", ""),
+            "file_name": point_tuple.payload.get("file_name", "unknown"),
+            "document_id": point_tuple.payload.get("document_id"),
+            "page": point_tuple.payload.get("page"),
+            "chunk_index": point_tuple.payload.get("chunk_index")
+        })
+    
+    top_results = sorted(raw_results, key=rerank_score, reverse=True)[:limit]
+    return top_results
+
     
 
 def is_similar_to_recent(chunks: list, new_text: str, window: int = 10, threshold: float = 0.7) -> bool:
@@ -94,10 +171,16 @@ def is_similar_to_recent(chunks: list, new_text: str, window: int = 10, threshol
             return True
     return False
 
+@app.on_event("startup")
+async def startup():
+    init_collection()
+    print("✅ Qdrant collection ready")
+
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
 
 
 @app.post("/ingest", response_model=IngestResponse)
@@ -105,6 +188,25 @@ async def ingest(req: IngestRequest):
     try:
         # Get Azure connection string from env
         connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+        existing = client.scroll(
+        collection_name=COLLECTION_NAME,
+        scroll_filter=Filter(
+            must=[FieldCondition(key="file_name", match=MatchValue(value=req.blob_url.split('/')[-1]))]
+        ),
+        limit=1,
+        )
+    
+        file_exists = len(existing[0]) > 0
+    
+        if file_exists:
+        # 2. Delete old version (new upload = new version)
+            print(f"🔄 Updating existing file: {req.blob_url.split('/')[-1]}")
+            client.delete(
+            collection_name=COLLECTION_NAME,
+            points_selector={"must": [{"key": "file_name", "match": {"value": req.blob_url.split('/')[-1]}}]}
+        )
+
         if not connection_string:
             raise HTTPException(status_code=500, detail="AZURE_STORAGE_CONNECTION_STRING not set")
 
@@ -163,9 +265,7 @@ async def ingest(req: IngestRequest):
                 else:
                     try:
                         img = page.to_image(resolution=250).original
-                        ocr_text = pytesseract.image_to_string(img, lang="eng+hin+dev").strip()
-                        print(f"PAGE {page_num} OCR RAW: {repr(ocr_text[:80])}")
-                        print(f"PAGE {page_num} OCR LEN: {len(ocr_text)}, WORDS: {len(ocr_text.split())}")      
+                        ocr_text = pytesseract.image_to_string(img, lang="eng+hin+dev").strip() 
                     # generic dedupe: no hardcoded strings
                         if len(ocr_text) >= 40 and len(ocr_text.split()) >= 5:
                             full_ocr_block = f"🖼️ IMAGE p{page_num}: {ocr_text}"
@@ -309,8 +409,29 @@ async def ingest(req: IngestRequest):
     
         else:
             raise HTTPException(400, f"Unsupported file type: {file_type}")
-        for c in all_chunks[-5:]:
-         print("FINAL CHUNK:", c.page, c.type, repr(c.content[:80]))
+
+        points = []
+        for idx, chunk in enumerate(all_chunks):
+            embedding = get_embedding(chunk.content)
+            points.append(PointStruct(
+                id= int.from_bytes(hashlib.sha256(f"{chunk.document_id}_{idx}".encode()).digest(), 'big') % (2**64),
+                vector=embedding,
+                payload={
+                    "content": chunk.content,
+                    "document_id": chunk.document_id,
+                    "file_name": file_name,  # full filename
+                    "page": chunk.page,
+                    "type": chunk.type,
+                    "chunk_index": idx,
+                    "uploaded_at": datetime.now(timezone.utc).isoformat(),  # add timestamp
+                }
+            ))
+    
+        client.upsert(collection_name=COLLECTION_NAME, points=points)
+    
+        action = "updated" if file_exists else "created"
+        print(f"✅ {action}: {len(all_chunks)} vectors for {file_name}")
+
         return IngestResponse(
             document_id=req.document_id,
             chunk_count=len(all_chunks),
@@ -319,3 +440,37 @@ async def ingest(req: IngestRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 5
+
+class ChatRequest(BaseModel):
+    query: str
+    limit: int = 5
+
+@app.post("/search")
+async def search(req: SearchRequest):
+    return {"results": search_logic(req.query, req.limit)}
+
+# Chat calls SAME logic automatically
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    # ✅ Automatically searches top 3
+    top_chunks = search_logic(req.query, limit=3)
+    context = "\n\n".join([r["content"] for r in top_chunks])
+    
+    prompt = f"""Using ONLY this context, answer:
+CONTEXT: {context}
+
+Q: {req.query}
+A:"""
+    
+    response = ollama.chat(model="llama3:latest", messages=[{"role": "user", "content": prompt}])
+    return {
+        "answer": response['message']['content'],
+        "sources": top_chunks  # Bonus: show sources!
+    }
