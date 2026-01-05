@@ -212,12 +212,15 @@ async def ingest(req: IngestRequest):
 
         # Download PDF from Azure Blob
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        
+        file_name = req.document_id
+
         parts = req.blob_url.replace("https://", "").split("/")
         account_name = parts[0]
         container_name = parts[1]
-        blob_name = parts[2]
+        blob_name = req.document_id
 
+      
+        print(blob_name)
         blob_client = blob_service_client.get_blob_client(
             container=container_name, 
             blob=blob_name
@@ -230,14 +233,13 @@ async def ingest(req: IngestRequest):
         response = requests.get(req.blob_url)
         #file_bytes = response.content
         file_type = detect_file_type(req.blob_url)
+     
 
-    
         all_chunks: List[Chunk] = []
         ocr_seen = set()
     
         print(f"Processing {file_type}: {req.blob_url}")
 
-        file_name = req.blob_url.split("/")[-1].split("?")[0] 
         pdf_bytes = blob_client.download_blob().readall()
     #PDF HANDLING (text + tables + OCR)
         if file_type == 'PDF':
