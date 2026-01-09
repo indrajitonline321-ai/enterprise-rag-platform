@@ -17,7 +17,7 @@ import os
 import re
 import requests
 import ollama
-from qdrant_client import QdrantClient
+from qdrant_client import QdrantClient,models
 from qdrant_client.http.models import PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue
 from datetime import datetime, timezone
 import uuid
@@ -26,7 +26,7 @@ import hashlib
 
 app = FastAPI(title="RAG Service", version="0.1.0")
 QDRANT_URL = "http://localhost:6333"
-COLLECTION_NAME = "rag_chunks"
+COLLECTION_NAME = "EnterPrise_chunks"
 client = QdrantClient(QDRANT_URL)
 
 
@@ -34,6 +34,7 @@ client = QdrantClient(QDRANT_URL)
 class IngestRequest(BaseModel):
     document_id: str
     blob_url: str
+    user_id: str
 
 class Chunk(BaseModel):
     content: str
@@ -47,6 +48,7 @@ class IngestResponse(BaseModel):
     chunk_count: int
     chunks: List[Chunk]
     file_type: str
+    userID: str
 
 def chunk_text(text: str, max_memory_mb: int = 50) -> list:
     CHUNK_SIZE = 600  # Smaller = more pages
@@ -101,13 +103,23 @@ def normalize_text(t: str) -> List[str]:
     t = re.sub(r"[^\w\s]", " ", t)  # keep word chars + spaces
     return [w for w in t.split() if w]
 
-def search_logic(query: str, limit: int = 5) -> List[Dict]:
+def search_logic(query: str, limit: int = 5,doc_ids: list[str]=None) -> List[Dict]:
     query_embedding = get_embedding(query)
-    
+    search_filter = None
+    if doc_ids:
+        search_filter = models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="userID", 
+                    match=models.MatchAny(any=doc_ids)
+                )
+            ]
+        )
     results = client.query_points(
         collection_name=COLLECTION_NAME,
         query=query_embedding,
         limit=limit * 3,
+        query_filter=search_filter,
         with_payload=True,
     )
     
@@ -212,26 +224,24 @@ async def ingest(req: IngestRequest):
 
         # Download PDF from Azure Blob
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        file_name = req.document_id
+        file_name = req.blob_url
 
         parts = req.blob_url.replace("https://", "").split("/")
         account_name = parts[0]
         container_name = parts[1]
-        blob_name = req.document_id
+        blob_name = parts[2]
 
       
-        print(blob_name)
+    
         blob_client = blob_service_client.get_blob_client(
             container=container_name, 
             blob=blob_name
         )
-
+        print(req.blob_url,container_name,file_name)
         # Extract container and blob name from URL
         if "blob.core.windows.net" not in req.blob_url:
             raise HTTPException(status_code=400, detail="Invalid blob URL")
-            
-        response = requests.get(req.blob_url)
-        #file_bytes = response.content
+                    #file_bytes = response.content
         file_type = detect_file_type(req.blob_url)
      
 
@@ -261,6 +271,7 @@ async def ingest(req: IngestRequest):
                             content=chunk_content,
                             document_id=req.document_id,
                             file_name=file_name,
+                            userID=req.user_id,
                             page=page_num,
                             type="text",
                         ))
@@ -286,6 +297,7 @@ async def ingest(req: IngestRequest):
                                             content=chunk_content,
                                         document_id=req.document_id,
                                         file_name=file_name,
+                                        userID=req.user_id,
                                         page=page_num,
                                         type="image",
                                         ))
@@ -339,6 +351,7 @@ async def ingest(req: IngestRequest):
                                     document_id=req.document_id,
                                     file_name=file_name,
                                     page=page_num,
+                                    userID=req.user_id,
                                     type="table",
                                 ))
                 
@@ -352,6 +365,7 @@ async def ingest(req: IngestRequest):
                                 document_id=req.document_id,
                                 file_name=file_name,
                                 page=page_num,
+                                userID=req.user_id,
                                 type="text"
                             ))
         
@@ -367,6 +381,7 @@ async def ingest(req: IngestRequest):
                                 document_id=req.document_id,
                                 file_name=file_name,
                                 page=page_num,
+                                userID=req.user_id,
                                 type="table"
                             ))
     #EXCEL (.xlsx)
@@ -379,6 +394,7 @@ async def ingest(req: IngestRequest):
                                 document_id=req.document_id,
                                 file_name=file_name,
                                 page=page_num,
+                                userID=req.user_id,
                                 type="text"
                             ))
     
@@ -395,6 +411,7 @@ async def ingest(req: IngestRequest):
                                 document_id=req.document_id,
                                 file_name=file_name,
                                 page=page_num,
+                                userID=req.user_id,
                                 type="text"
                             ))
     
@@ -406,6 +423,7 @@ async def ingest(req: IngestRequest):
                                 document_id=req.document_id,
                                 file_name=file_name,
                                 page=page_num,
+                                userID=req.user_id,
                                 type="text"
                             ))
     
@@ -425,6 +443,7 @@ async def ingest(req: IngestRequest):
                     "page": chunk.page,
                     "type": chunk.type,
                     "chunk_index": idx,
+                    "userID" : req.user_id,
                     "uploaded_at": datetime.now(timezone.utc).isoformat(),  # add timestamp
                 }
             ))
@@ -438,7 +457,8 @@ async def ingest(req: IngestRequest):
             document_id=req.document_id,
             chunk_count=len(all_chunks),
             file_type=file_type,
-            chunks=all_chunks
+            chunks=all_chunks,
+            userID=req.user_id
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -453,6 +473,10 @@ class SearchRequest(BaseModel):
 class ChatRequest(BaseModel):
     query: str
     limit: int = 5
+    docIds: List[str]
+    userId: str
+    
+
 
 @app.post("/search")
 async def search(req: SearchRequest):
@@ -462,9 +486,8 @@ async def search(req: SearchRequest):
 @app.post("/chat")
 async def chat(req: ChatRequest):
     # ✅ Automatically searches top 3
-    top_chunks = search_logic(req.query, limit=3)
+    top_chunks = search_logic(req.query, limit=3,doc_ids=req.docIds)
     context = "\n\n".join([r["content"] for r in top_chunks])
-    
     prompt = f"""Using ONLY this context, answer:
 CONTEXT: {context}
 

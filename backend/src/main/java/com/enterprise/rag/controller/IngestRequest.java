@@ -5,5 +5,5 @@ import lombok.Data;
 public class IngestRequest {
     private String document_id;
     private String blob_url;
-    private String userId;
+    private String user_id;
 }

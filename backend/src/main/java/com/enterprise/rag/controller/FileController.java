@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
+import com.enterprise.rag.service.DocumentService;
 
 @RestController
 @RequestMapping("/api/files")
@@ -25,6 +25,12 @@ public class FileController {
 
     @Value("${azure.storage.connection-string}")
     private String connectionString;
+
+    private final DocumentService documentService;  // ✅ add field
+
+    public FileController(DocumentService documentService) {  // ✅ constructor injection
+        this.documentService = documentService;
+    }
 
     @GetMapping("/list")
     public ResponseEntity<List<String>> list() {
@@ -43,30 +49,14 @@ public class FileController {
         }
         return ResponseEntity.ok(names);
     }
-    @PostMapping("/upload")  
-    public ResponseEntity<Map<String, String>> upload(@RequestParam("file") MultipartFile file) {
-        try {
-            BlobServiceClient service = new BlobServiceClientBuilder()
-                .connectionString(connectionString)
-                .buildClient();
-                
-            BlobContainerClient container = service.getBlobContainerClient("documents");
-            container.createIfNotExists();
-            
-            BlobClient blob = container.getBlobClient(file.getOriginalFilename());
-            blob.upload(file.getInputStream(), file.getSize(), true);
-            
-            Map<String, String> response = Map.of(
-                "message", "✅ File uploaded successfully!",
-                "name", file.getOriginalFilename(),
-                "url", blob.getBlobUrl()
-            );
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                .body(Map.of("error", e.getMessage()));
-        }
+    
+
+@PostMapping("/upload")  
+public ResponseEntity<Map<String, String>> upload(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam(defaultValue = "Admin") String userName) {
+    return ResponseEntity.ok(documentService.uploadAndGrant(file, userName));
 }
 }
+
 
