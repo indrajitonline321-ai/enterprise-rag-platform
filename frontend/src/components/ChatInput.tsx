@@ -20,7 +20,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       const res = await fetch('http://localhost:8080/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q })
+        body: JSON.stringify({ query: q, userId: "Employee" })
       });
 
       const  ChatResponseAPI = await res.json();

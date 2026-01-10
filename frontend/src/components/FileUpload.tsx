@@ -19,6 +19,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setFiles }) => {
     
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('userID', "Manager");
 
     try {
       // 1. STEP 1: Upload to Spring Boot → Azure Blob
@@ -30,8 +31,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ setFiles }) => {
       const uploadJson = await uploadRes.json();
       const documentId = uploadJson.name || 'unknown';
       const blobUrl = uploadJson.url;  // Spring Boot returns blob URL
-      
-      setStatus('✅ Uploaded! Indexing chunks...');
+
+      // const documentId = "9"
+      //  const blobUrl = "https://enterpriseragstorage.blob.core.windows.net/documents/pieChart.pdf";  // Spring Boot returns blob URL
+     const userId="Manager"
+      // setStatus('✅ Uploaded! Indexing chunks...');
 
       // 2. STEP 2: Trigger Python /ingest
       const ingestRes = await fetch('http://localhost:8080/api/ingest', {
@@ -39,7 +43,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ setFiles }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           document_id: documentId,
-          blob_url: blobUrl  // Python downloads from Azure
+          blob_url: blobUrl,
+          user_id: userId, // Python downloads from Azure
         }),
       });
 
