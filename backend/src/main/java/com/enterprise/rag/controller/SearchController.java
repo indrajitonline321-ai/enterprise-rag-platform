@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.enterprise.rag.model.Document;
 import com.enterprise.rag.model.User;
 import com.enterprise.rag.repository.DocumentRepository;
 import com.enterprise.rag.repository.UserRepository;
