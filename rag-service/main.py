@@ -15,6 +15,7 @@ from PIL import Image
 import pandas as pd
 import os
 import re
+from typing import List
 import requests
 import ollama
 from qdrant_client import QdrantClient,models
@@ -103,6 +104,33 @@ def normalize_text(t: str) -> List[str]:
     t = re.sub(r"[^\w\s]", " ", t)  # keep word chars + spaces
     return [w for w in t.split() if w]
 
+def preprocess_question(question: str) -> str:
+    if '|' not in question:
+        return question  # no pipe → use as-is
+    
+    # Split into two parts
+    left, right = question.split('|', 1)  # first | only
+    left = left.strip()
+    right = right.strip()
+    # Ask Ollama to check similarity
+    sim_prompt = f"""Compare these two questions for similarity (same topic/intent):
+    
+Q1: {left}
+Q2: {right}
+
+Return ONLY "MATCH" if they are about the same thing, else "NOMATCH". No explanation."""
+    
+    response = ollama.generate(
+        model="llama3:latest",
+        prompt=sim_prompt,
+        options={"temperature": 0.1, "num_predict": 10}  # deterministic
+    )
+    ollama_reply = response['response'].strip().upper()
+    if "NOMATCH" in ollama_reply:
+        return right
+    else:
+        return f"{left} | {right}" 
+
 def search_logic(query: str, limit: int = 5,doc_ids: list[str]=None) -> List[Dict]:
     query_embedding = get_embedding(query)
     search_filter = None
@@ -162,10 +190,7 @@ def search_logic(query: str, limit: int = 5,doc_ids: list[str]=None) -> List[Dic
     
 
 def is_similar_to_recent(chunks: list, new_text: str, window: int = 10, threshold: float = 0.7) -> bool:
-    """
-    True if new_text shares >= `threshold` Jaccard similarity in words
-    with any of the last `window` chunks.
-    """
+  
     new_words = set(normalize_text(new_text)[:80])  # limit for speed
     if not new_words:
         return False
@@ -480,18 +505,20 @@ class ChatRequest(BaseModel):
 
 @app.post("/search")
 async def search(req: SearchRequest):
+ 
     return {"results": search_logic(req.query, req.limit)}
 
 # Chat calls SAME logic automatically
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    question = preprocess_question(req.query) 
     # ✅ Automatically searches top 3
-    top_chunks = search_logic(req.query, limit=3,doc_ids=req.docIds)
+    top_chunks = search_logic(question, limit=3,doc_ids=req.docIds)
     context = "\n\n".join([r["content"] for r in top_chunks])
     prompt = f"""Using ONLY this context, answer:
 CONTEXT: {context}
 
-Q: {req.query}
+Q: {question}
 A:"""
     
     response = ollama.chat(model="llama3:latest", messages=[{"role": "user", "content": prompt}])

@@ -4,9 +4,16 @@ import type { ChatResponseAPI } from '../types';
 
 interface ChatInputProps {
   onSend: (query: string, response: ChatResponseAPI) => void;
+  lastQuery?: string; 
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSend,lastQuery }) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevents adding a new line in the textarea
+      handleSubmit(e);    // Calls your form submission function
+    }
+  };
   const [query, setQuery] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -14,13 +21,19 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
     if (!query.trim()) return;
 
     const q = query.trim();
+    
+    const currentQuery = query.trim();
+    const combinedQuery = lastQuery 
+      ? `${lastQuery} | ${currentQuery}` 
+      : currentQuery;
+
     setQuery('');
 
     try {
       const res = await fetch('http://localhost:8080/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q, userId: "Employee" })
+        body: JSON.stringify({ query: combinedQuery, userId: localStorage.getItem('userName')!})
       });
 
       const  ChatResponseAPI = await res.json();
@@ -32,12 +45,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
 
   return (
     <form onSubmit={handleSubmit} className="chat-input">
-      <input
+       <textarea
         value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Ask about your documents..."
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask about your documents..." className="inputTextArea"
       />
-      <button type="submit">Send</button>
+      <button type="submit"><span>↑</span></button>
     </form>
   );
 };

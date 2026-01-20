@@ -6,16 +6,38 @@
 .file-item { padding: 10px; border: 1px solid #eee; margin: 5px 0; }
 .chat-input { position: sticky; bottom: 20px; display: flex; gap: 10px; }
 .chat-input input { flex: 1; padding: 12px; }
-.chat-input button { padding: 12px 24px; background: #007bff; color: white; border: none; }
 .message { margin: 20px 0; }
 .error { color: red; }
 
+.inputTextArea{
+   min-height: 41px;
+    width: 920px;
+    max-width: 88%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: 28px;
+    padding: 11px 20px;
+    color: #e5e7eb;
+    
+    
+    line-height: 1.4;
+    field-sizing: unset;
+    overflow-y: auto !important;
+    resize: none;        
+}
+
 .answer {
-  background: #e8f5e8;
-  padding: 15px;
-  border-radius: 8px;
-  margin: 15px 0;
-  border-left: 4px solid #28a745;
+background: #292d29;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #ffb9b9;
+}
+.Heading{
+    padding-top: 5%;
+    position: absolute;
+    padding-left: 33%;
 }
 
 .sources-title {
@@ -53,4 +75,699 @@
   color: #6c757d;
   font-style: italic;
   padding: 10px;
+}
+
+
+.landing {
+    min-height: 100vh;
+    padding: 55px 20px;
+    text-align: center;
+    /* Replace gradient with your image path */
+    background-image: url('./36151095_mkm5.jpg');
+    /* Standard 2026 properties for clean scaling */
+    background-size: cover;      /* Fills the entire div */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat;
+    color: #fff;
+}
+
+.card-grid {
+     display: flex;
+    flex-wrap: wrap;
+    gap: 44px;
+    justify-content: center;
+    margin-top: 139px;
+}
+
+.card:hover {
+  /* Enlarge the card */
+  transform: scale(1.05); 
+  
+  /* Add the shadow */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Ensure it stays on top of other elements while enlarging */
+  position: relative;
+  z-index: 10;
+} 
+
+
+.card {
+    background: rgba(100, 210, 400, 0.19);
+    border-radius: 23px;
+    padding: 60px;
+    width: 249px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+  margin-bottom: 10px;
+}
+
+.card button {
+  margin-top: 10px;
+}
+
+.h1Arch{
+         margin: 0.9% 0%;
+    font-size: 28px;
+}
+
+.architecture-page {
+  min-height: 100vh;
+  padding: 20px 40px;
+  background: #050816;
+  color: #fff;
+}
+
+.architecture-image {
+ max-width: 94%;
+    border-radius: 15px;
+    margin: -3px 49px;
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #00ff88;
+  cursor: pointer;
+  margin-bottom: -3px;
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100vh; 
+}
+
+
+/* MODAL STYLES - add to your existing CSS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+margin: 0px;
+    color: #333;
+    font-size: 20px;
+    align-items: center;
+    padding-left: 36px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #666;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.modal-close1{
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #666;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+      margin-left: 95%;
+    margin-top: -4%;
+}
+
+.modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+.modal-close1:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+.modal-form .input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.modal-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.modal-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(45deg, #00ff88, #00cc6a);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 255, 136, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 12px 0;
+  border-left: 4px solid #dc2626;
+  font-size: 14px;
+}
+
+.demo-info {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #666;
+}
+
+.demo-info code {
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { 
+  from { opacity: 0; transform: translateY(20px) scale(0.95); } 
+  to { opacity: 1; transform: translateY(0) scale(1); } 
+}
+
+/* Your existing .no-scroll works perfectly */
+
+
+/* Container around each label + input */
+/* Update .input-group to make label + input inline */
+.input-group1 {
+ display: flex;
+      display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+        padding-left: 1.2px;
+}
+.input-group2 {
+ display: flex;
+      display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+/* Label now inline */
+.input-group1 label {
+      flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #0b0b0b;
+    white-space: nowrap;
+    min-width: 60px;
+    padding-left: 53px;
+}
+
+.input-group2 label {
+      flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #0b0b0b;
+    white-space: nowrap;
+    min-width: 60px;
+    padding-left: 53px;
+}
+
+/* Input takes remaining space */
+.login-input {
+  flex: 1; /* Takes all available space */
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(15, 23, 42, 0.7);
+  color: #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: 
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    transform 0.08s ease;
+  box-sizing: border-box;
+}
+
+/* Rest of your existing styles stay the same */
+.login-input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.6),
+              0 0 16px rgba(34, 197, 94, 0.35);
+  background: rgba(15, 23, 42, 0.95);
+  transform: translateY(-1px);
+}
+
+.login-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Focus label color */
+.input-group:focus-within label {
+  color: #08461e;
+}
+
+
+/* Updated RAG Dashboard - Hidden modal + slide-down */
+.rag-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  position: relative;
+  color: #fff;
+}
+
+.main-chat {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Top header bar */
+.header-bar {
+    padding: 0px 16px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* HIDDEN FILE BUTTON - Top-right */
+.file-toggle-btn {
+  background: linear-gradient(45deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+}
+
+/* LOGOUT BUTTON - Next to file button */
+.logout-btn {
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  margin-left: 12px;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* SLIDE-DOWN FILE PANEL - Hidden by default */
+.file-panel {
+  position: fixed;
+  top: 0;
+  right: -420px; /* Hidden off-screen */
+  width: 420px;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.98);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow-y: auto;
+}
+
+/* Slide in when open */
+.file-panel.open {
+  right: 0;
+}
+
+/* File panel header */
+.file-panel-header {
+  padding: 24px 28px;
+  background: rgba(34, 197, 94, 0.15);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.file-panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Close button in panel */
+.panel-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 8px 12px;
+  border-radius: 50%; /* Perfect circle */
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.panel-close-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+  transform: scale(1.1) rotate(90deg); /* Nice spin effect */
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+
+/* File content */
+.file-panel-content {
+  padding: 28px;
+}
+
+.upload-section {
+  margin-bottom: 24px;
+}
+
+.upload-section input[type="file"] {
+  width: 95%;
+  padding: 14px;
+  border: 2px dashed rgba(34, 197, 94, 0.4);
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.05);
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.upload-section input[type="file"]:hover {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+/* File list */
+.file-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s;
+}
+
+.file-item:hover {
+  background: rgba(34, 197, 94, 0.15);
+  transform: translateX(4px);
+}
+
+/* Chat area (full screen) */
+.chat-messages {
+  flex: 1;
+  padding: 24px 40px;
+  overflow-y: auto;
+}
+
+/* COMPLETE FIX - 80% CENTER + MULTILINE + NO BAR + SLIDE LEFT */
+.chat-input {
+    padding: 5px 20px;
+    background: transparent;
+    backdrop-filter: blur(20px);
+    border-top: 0px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+/* 80% CENTERED - NO BACKGROUND BAR */
+.chat-input-container {
+  width: 80vw;
+  max-width: 1000px;
+  height: 64px; /* Fixed height */
+  margin: 0 auto;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: transparent; /* NO BAR */
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 32px;
+  padding: 8px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* MULTILINE TALL INPUT - SCROLLS UP */
+.chat-input input {
+  flex: 1;
+  min-height: 48px;     /* Min tall */
+  max-height: 120px;    /* Max grow */
+  padding: 12px 20px;
+  border: none !important;
+  background: transparent !important;
+  color: #e5e7eb !important;
+  font-size: 16px;
+  outline: none !important;
+  border-radius: 26px !important;
+  line-height: 1.4;
+  resize: vertical;
+  /* PERFECT MULTILINE */
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  overflow-y: auto !important;
+}
+
+/* SMALL ROUND BUTTON */
+.chat-input button {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #177339;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+        margin-top: 1.5%;
+}
+.chat-input button:hover {
+    background: #16a34a; /* Darker green on hover */
+    transform: scale(1.1); /* Subtle enlarge on hover */
+}
+
+/* Optional: Make the arrow look sharp */
+.chat-input button span {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 0;
+}
+
+
+/* UPLOAD PANEL RIGHT (UNCHANGED - WORKING) */
+
+
+/* Ensure chat messages don't hide */
+.chat-messages {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* FLEXBOX FIXES - PREVENTS HIDING */
+  flex-shrink: 1;
+  flex-grow: 1;
+  min-height: 0;
+  height: 0;            /* Allow flex shrink */
+  position: relative;
+}
+
+
+
+/* Animations */
+@keyframes slideInRight {
+  from { right: -420px; }
+  to { right: 0; }
+}
+
+.ContactUs {
+   font-size: 16px;
+    font-weight: 600;
+        margin-left: -15%;
+
+}
+
+/* ContactModal.css */
+
+/* Optionally narrow the modal or adjust height */
+.contact-modal {
+  max-width: 460px;
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.contactTextBox{
+      width: 300px;
+}
+
+.textArea{
+  height: 96px;width: 303px;
+}
+
+.success-text {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #22c55e;
+}
+
+.facebook-icon {
+  background: #1877F2;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 45px;
+  text-align: center;
+  line-height: 60px; /* Adjust to position 'f' */
+}
+.iconF {margin-left: 0.7%;
+    position: absolute;
+  }
+  .iconI {margin-left: 3.25%;
+    position: absolute;
+  }
+.iconL {margin-left: 5.7%;
+    position: absolute;
+  }
+
+
+  .contact-us-btn {
+  display: inline-block;    /* Required for transform/scaling to work */
+  cursor: pointer;         /* Changes mouse to the "hand/click" icon */
+  transition: transform 0.2s ease-in-out; /* Makes the scaling smooth */
+}
+
+.contact-us-btn:hover {
+  transform: scale(1.1);   /* Makes it 10% larger on hover */
+}
+
+.modal-title {
+      margin-top: -6%;
+    margin-left: 36%;
 }
