@@ -16,14 +16,20 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose, onSuccess }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      // TODO: call backend or EmailJS to send mail
-      // await sendContact({ name, email, organisation, query });
+    const data = { name, email, query };
 
-      setSuccessMsg('Thank you! We will contact you soon.');
+    try {
+      const uploadRes = await fetch('http://localhost:8080/api/files/contactUS', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+        if (uploadRes.ok) {
+        setSuccessMsg('Got It! We’ll Get Back to You Shortly! 😊');
+        }
       setTimeout(() => {
         onSuccess();
-      }, 1200); // small delay so user can read
+      }, 2200); 
     } catch (err) {
       console.error(err);
       setSuccessMsg('Something went wrong. Please try again.');
@@ -50,6 +56,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose, onSuccess }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={50}
               required className="contactTextBox"
             />
           </div>
@@ -59,6 +66,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose, onSuccess }) => {
             <input
               type="email"
               value={email}
+              maxLength={50}
               onChange={(e) => setEmail(e.target.value)}
               required className="contactTextBox"
             />
@@ -70,6 +78,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose, onSuccess }) => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               rows={4} 
+              maxLength={500}
               required className="textArea"
             />
           </div>

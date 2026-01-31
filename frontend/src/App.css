@@ -729,9 +729,10 @@ margin: 0px;
 }
 
 .success-text {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  color: #22c55e;
+     margin-top: 0.95rem;
+    font-size: 1.1rem;
+    color: #000000;
+    margin-left: 19%;
 }
 
 .facebook-icon {

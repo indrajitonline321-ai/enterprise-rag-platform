@@ -12,7 +12,7 @@ public class Document {
     private long id;
     
     private String name;
-    private String blobName;  // "MEMBERSHIP GUIDE...pdf"
+    private String blobName; 
     private String blobUrl;
     
     // constructors, getters, setters

@@ -2,6 +2,7 @@ package com.enterprise.rag.service;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,9 +14,11 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.enterprise.rag.model.Document;
 import com.enterprise.rag.model.User;
 import com.enterprise.rag.model.UserDocumentAccess;
+import com.enterprise.rag.model.contactUS;
 import com.enterprise.rag.repository.DocumentRepository;
 import com.enterprise.rag.repository.UserDocumentAccessRepository;
 import com.enterprise.rag.repository.UserRepository;
+import com.enterprise.rag.repository.contactUsRepository;
 
 
 @Service
@@ -86,4 +89,17 @@ public class DocumentService {
                 "blobUrl", blobUrl
         );
     }
+
+   @Autowired
+    private contactUsRepository contactRepo;
+     public String saveUserQuery(String name, String email,String query) {
+        contactUS contact = new contactUS();
+        contact.setName(name);
+        contact.setEmail(email);
+        contact.setCustomerQuery(query);
+        contactRepo.save(contact);
+        
+        return ("We will Contact you soon!");
+     }
+
 }

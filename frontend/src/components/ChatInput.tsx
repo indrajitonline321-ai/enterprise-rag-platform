@@ -10,8 +10,8 @@ interface ChatInputProps {
 const ChatInput: React.FC<ChatInputProps> = ({ onSend,lastQuery }) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // Prevents adding a new line in the textarea
-      handleSubmit(e);    // Calls your form submission function
+      e.preventDefault(); 
+      handleSubmit(e);    
     }
   };
   const [query, setQuery] = useState('');
