@@ -28,7 +28,7 @@ import hashlib
 app = FastAPI(title="RAG Service", version="0.1.0")
 QDRANT_URL = "http://localhost:6333"
 COLLECTION_NAME = "EnterPrise_chunks"
-client = QdrantClient(QDRANT_URL)
+client = QdrantClient("enterprise-rag-platform-qdrant-1")
 
 
 
@@ -121,7 +121,7 @@ Q2: {right}
 Return ONLY "MATCH" if they are about the same thing, else "NOMATCH". No explanation."""
     
     response = ollama.generate(
-        model="llama3:latest",
+        model="llama3.2:1b",
         prompt=sim_prompt,
         options={"temperature": 0.1, "num_predict": 10}  # deterministic
     )
@@ -521,8 +521,9 @@ CONTEXT: {context}
 Q: {question}
 A:"""
     
-    response = ollama.chat(model="llama3:latest", messages=[{"role": "user", "content": prompt}])
+    response = ollama.chat(model="llama3.2:1b", messages=[{"role": "user", "content": prompt}])
     return {
         "answer": response['message']['content'],
         "sources": top_chunks  # Bonus: show sources!
     }
+    

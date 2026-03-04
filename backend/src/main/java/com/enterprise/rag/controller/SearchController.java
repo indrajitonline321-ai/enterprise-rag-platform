@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,7 +26,8 @@ import com.enterprise.rag.repository.UserRepository;
 public class SearchController {
     
     private final RestTemplate restTemplate;
-    private final String pythonServiceUrl = "http://localhost:8000";  // FastAPI
+    @Value("${PYTHON_SERVICE_URL:http://localhost:8000}")
+    private String pythonServiceUrl;   // FastAPI
     private final UserRepository userRepo;
     private final DocumentRepository docRepo;
     

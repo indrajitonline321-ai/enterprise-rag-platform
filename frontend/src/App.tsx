@@ -5,7 +5,12 @@ import LoginModal from './components/LoginModal'; // New modal component
 import RagView from './RagView'; // Your existing RAG component
 import archDiagram from './ArchDigram.png'; 
 import ContactModal from './components/ContactModel';
-import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { 
+  faFacebook, 
+  faLinkedin, 
+  faInstagram 
+} from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type ViewMode = 'landing' | 'rag' | 'architecture';
 
@@ -95,20 +100,18 @@ function App() {
               <span className="contact-us-btn">Contact US</span>
             </a>
             <span> | Social </span>
-            <a href="https://www.facebook.com/profile.php?id=61586574128434" className="iconF" target="_blank" 
+            <a href="https://www.facebook.com/profile.php?id=61586574128434" className="iconF hover:shadow-lg transition-shadow" target="_blank" 
   rel="noopener noreferrer">
-                <FaFacebook color="#1877F2" size={20} />
-            </a>
+                         <FontAwesomeIcon icon={faFacebook} style={{color: 'hsla(230, 24%, 90%, 1.00)', fontSize: '20px'}}  />
+          </a>
              <a href="#" className="iconI" target="_blank" 
   rel="noopener noreferrer"
             >
-                <FaInstagram style={{ color: "#E4405F", fontSize: "20px" }} />
-            </a>
+                <FontAwesomeIcon icon={faInstagram}  style={{color: '#E4405F', fontSize: '20px'}} />            </a>
              <a href="https://www.linkedin.com/in/indrajit-singh-243a7b85/" className="iconL" target="_blank" 
   rel="noopener noreferrer"
             >
-                <FaLinkedin style={{ color: "#0A66C2", fontSize: "20px" }} />
-            </a>
+               <FontAwesomeIcon icon={faLinkedin}  style={{color: '#77b2edff', fontSize: '20px'}} />            </a>
             </div>
             </div>
           </div>

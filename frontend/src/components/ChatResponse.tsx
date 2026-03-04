@@ -28,7 +28,7 @@ const ChatResponse: React.FC<ChatResponseProps> = ({ history }) => {
 
 const handleDownload = async (fileName: string) => {
   try {
-    const response = await fetch(`http://localhost:8080/api/files/download/${(getFileName(fileName))}`);
+    const response = await fetch(`https://forgerag.com/api/files/download/${(getFileName(fileName))}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const blob = await response.blob();

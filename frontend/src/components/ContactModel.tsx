@@ -19,7 +19,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ onClose, onSuccess }) => {
     const data = { name, email, query };
 
     try {
-      const uploadRes = await fetch('http://localhost:8080/api/files/contactUS', {
+      const uploadRes = await fetch('https://forgerag.com/api/files/contactUS', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

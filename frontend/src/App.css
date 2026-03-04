@@ -749,13 +749,29 @@ margin: 0px;
 }
 .iconF {margin-left: 0.7%;
     position: absolute;
+    transition: transform 0.2s ease-in-out; 
   }
-  .iconI {margin-left: 3.25%;
+  .iconI {    margin-left: 3.3%;
     position: absolute;
+    transition: transform 0.2s ease-in-out; 
   }
 .iconL {margin-left: 5.7%;
     position: absolute;
+    transition: transform 0.2s ease-in-out; 
   }
+
+.iconL:hover {
+  transform: scale(1.3);   /* Makes it 10% larger on hover */
+}
+
+.iconF:hover {
+  transform: scale(1.3);   /* Makes it 10% larger on hover */
+}
+
+.iconI:hover {
+  transform: scale(1.3);   /* Makes it 10% larger on hover */
+}
+
 
 
   .contact-us-btn {
@@ -772,3 +788,4 @@ margin: 0px;
       margin-top: -6%;
     margin-left: 36%;
 }
+

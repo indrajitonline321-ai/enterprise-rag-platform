@@ -23,7 +23,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setFiles }) => {
 
     try {
       // 1. STEP 1: Upload to Spring Boot → Azure Blob
-      const uploadRes = await fetch('http://localhost:8080/api/files/upload', {
+      const uploadRes = await fetch('https://forgerag.com/api/files/upload', {
         method: 'POST',
         body: formData,
       });
@@ -38,7 +38,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setFiles }) => {
       // setStatus('✅ Uploaded! Indexing chunks...');
 
       // 2. STEP 2: Trigger Python /ingest
-      const ingestRes = await fetch('http://localhost:8080/api/ingest', {
+      const ingestRes = await fetch('https://forgerag.com/api/ingest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

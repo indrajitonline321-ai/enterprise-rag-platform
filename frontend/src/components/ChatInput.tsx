@@ -30,7 +30,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend,lastQuery }) => {
     setQuery('');
 
     try {
-      const res = await fetch('http://localhost:8080/api/search', {
+      const res = await fetch('https://forgerag.com/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: combinedQuery, userId: localStorage.getItem('userName')!})
